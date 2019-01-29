@@ -6,7 +6,7 @@ const DB_URL = 'mongodb://localhost:27017/practice'
  */
 mongoose.connect(
     DB_URL,
-    { useNewUrlParser: true, autoIndex: false }
+    { useNewUrlParser: true, autoIndex: false, useFindAndModify: false }
 )
 
 /**

@@ -8,7 +8,7 @@ router.get('/', async (ctx, next) => {
 
 router.get('/blog/:id', async (ctx, next) => {
     await next()
-    await Blog.findOne({ _id: ctx.params.id })
+    await Blog.findByIdAndUpdate(ctx.params.id, { $inc: { read: 1 } })
         .exec()
         .then(doc => {
             ctx.response.status = 200
@@ -36,7 +36,7 @@ router.post('/blog', async (ctx, next) => {
 
 router.put('/blog/:id', async (ctx, next) => {
     await next()
-    await Blog.updateOne({ _id: ctx.params.id }, ctx.request.body)
+    await Blog.findByIdAndUpdate(ctx.params.id, ctx.request.body)
         .exec()
         .then(() => {
             ctx.response.status = 200
@@ -49,7 +49,7 @@ router.put('/blog/:id', async (ctx, next) => {
 
 router.del('/blog/:id', async (ctx, next) => {
     await next()
-    await Blog.deleteOne({ _id: ctx.params.id })
+    await Blog.findByIdAndDelete(ctx.params.id)
         .exec()
         .then(() => {
             ctx.response.status = 200
