@@ -19,7 +19,7 @@ Content-Type: {{contentType}}
     "title": "Hello world3",
     "category": "文章",
     "tags": ["javascript","react"],
-    "content": "# personal-site-service\nBack-end service for personal site."
+    "content": "# personal-site-service\n\nBack-end service for personal site."
 }
 
 ###
@@ -28,7 +28,7 @@ PUT http://{{host}}/{{name}}/{{id}} HTTP/1.1
 Content-Type: {{contentType}}
 
 {
-    "content": "# personal-site\nBackup for my personal site."
+    "content": "# personal-site\n\nBackup for my personal site."
 }
 
 ###

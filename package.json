@@ -4,11 +4,12 @@
     "description": "Back-end service for personal site.",
     "scripts": {
         "dev": "node index.js",
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "start": "node index.js"
     },
     "author": "luhaopeng",
     "license": "ISC",
     "dependencies": {
+        "@koa/cors": "^2.2.3",
         "koa": "^2.6.2",
         "koa-bodyparser": "^4.2.1",
         "koa-router": "^7.4.0",
