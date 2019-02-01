@@ -8,7 +8,9 @@ const BlogSchema = new Schema({
     time: { type: Date, default: Date.now },
     read: { type: Number, default: 0 },
     comment: { type: Number, default: 0 },
-    content: String
+    content: String,
+    draft: { type: Boolean, default: true },
+    update: { type: Date, default: Date.now }
 })
 
 module.exports = mongoose.model('blog', BlogSchema)

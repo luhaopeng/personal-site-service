@@ -36,7 +36,10 @@ router.post('/blog', async (ctx, next) => {
 
 router.put('/blog/:id', async (ctx, next) => {
     await next()
-    await Blog.findByIdAndUpdate(ctx.params.id, ctx.request.body)
+    await Blog.findByIdAndUpdate(ctx.params.id, {
+        update: Date.now(),
+        ...ctx.request.body
+    })
         .exec()
         .then(() => {
             ctx.response.status = 200
