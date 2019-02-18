@@ -1,9 +1,24 @@
 const router = require('koa-router')()
 const Blog = require('../db/blog')
 
+const limit = 5
+
 router.get('/', async (ctx, next) => {
     await next()
     ctx.body = 'Hello World!'
+})
+
+router.get('/bloglist/:page', async (ctx, next) => {
+    await next()
+    await Blog.find({}, { title: 1, time: 1 })
+        .skip(ctx.params.page * limit)
+        .limit(limit)
+        .sort({ time: -1 })
+        .exec()
+        .then(doc => {
+            ctx.response.status = 200
+            ctx.response.body = { doc }
+        })
 })
 
 router.get('/blog/:id', async (ctx, next) => {

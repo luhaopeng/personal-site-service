@@ -8,6 +8,10 @@
 @name=blog
 @id=5c50094ab45fe9411c3aae89
 
+GET http://{{host}}/bloglist/0 HTTP/1.1
+
+###
+
 GET  http://{{host}}/{{name}}/{{id}} HTTP/1.1
 
 ###
