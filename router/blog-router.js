@@ -15,7 +15,7 @@ router.get('/blog/:id', async (ctx, next) => {
             ctx.response.body = { doc }
         })
         .catch(err => {
-            ctx.response.status = 500
+            ctx.response.status = 400
             ctx.response.body = { msg: err.errmsg }
         })
 })
@@ -29,7 +29,7 @@ router.post('/blog', async (ctx, next) => {
             ctx.response.status = 200
         })
         .catch(err => {
-            ctx.response.status = 500
+            ctx.response.status = 400
             ctx.response.body = { msg: err.errmsg }
         })
 })
@@ -45,7 +45,7 @@ router.put('/blog/:id', async (ctx, next) => {
             ctx.response.status = 200
         })
         .catch(err => {
-            ctx.response.status = 500
+            ctx.response.status = 400
             ctx.response.body = { msg: err.errmsg }
         })
 })
@@ -58,7 +58,7 @@ router.del('/blog/:id', async (ctx, next) => {
             ctx.response.status = 200
         })
         .catch(err => {
-            ctx.response.status = 500
+            ctx.response.status = 400
             ctx.response.body = { msg: err.errmsg }
         })
 })
