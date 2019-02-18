@@ -8,7 +8,11 @@ router.get('/', async (ctx, next) => {
 
 router.get('/blog/:id', async (ctx, next) => {
     await next()
-    await Blog.findByIdAndUpdate(ctx.params.id, { $inc: { read: 1 } })
+    let { fromManage } = ctx.request.body
+    let query = !fromManage
+        ? Blog.findByIdAndUpdate(ctx.params.id, { $inc: { read: 1 } })
+        : Blog.findById(ctx.params.id)
+    await query
         .exec()
         .then(doc => {
             ctx.response.status = 200
