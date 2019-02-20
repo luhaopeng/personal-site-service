@@ -8,7 +8,7 @@ router.get('/', async (ctx, next) => {
     ctx.body = 'Hello World!'
 })
 
-router.get('/bloglist/:page', async (ctx, next) => {
+router.put('/bloglist/:page', async (ctx, next) => {
     await next()
     let { title } = ctx.request.body
     await Blog.find(
@@ -25,12 +25,12 @@ router.get('/bloglist/:page', async (ctx, next) => {
         })
 })
 
-router.get('/blog/:id', async (ctx, next) => {
+router.get('/blog/:id/:fromManage', async (ctx, next) => {
     await next()
-    let { fromManage } = ctx.request.body
-    let query = !fromManage
-        ? Blog.findByIdAndUpdate(ctx.params.id, { $inc: { read: 1 } })
-        : Blog.findById(ctx.params.id)
+    let query =
+        ctx.params.fromManage === 'manage'
+            ? Blog.findById(ctx.params.id)
+            : Blog.findByIdAndUpdate(ctx.params.id, { $inc: { read: 1 } })
     await query
         .exec()
         .then(doc => {
