@@ -10,7 +10,11 @@ router.get('/', async (ctx, next) => {
 
 router.get('/bloglist/:page', async (ctx, next) => {
     await next()
-    await Blog.find({}, { title: 1, time: 1 })
+    let { title } = ctx.request.body
+    await Blog.find(
+        { title: new RegExp(title) },
+        { title: 1, time: 1, draft: 1 }
+    )
         .skip(ctx.params.page * limit)
         .limit(limit)
         .sort({ time: -1 })
