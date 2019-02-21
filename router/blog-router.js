@@ -1,15 +1,11 @@
-const router = require('koa-router')()
+const router = require('koa-router')({
+    prefix: '/blog'
+})
 const Blog = require('../db/blog')
 
 const limit = 5
 
-router.get('/', async (ctx, next) => {
-    await next()
-    ctx.body = 'Hello World!'
-})
-
-router.put('/bloglist/:page', async (ctx, next) => {
-    await next()
+router.put('/list/:page', async ctx => {
     let { title } = ctx.request.body
     await Blog.find(
         { title: new RegExp(title) },
@@ -25,13 +21,8 @@ router.put('/bloglist/:page', async (ctx, next) => {
         })
 })
 
-router.get('/blog/:id/:fromManage', async (ctx, next) => {
-    await next()
-    let query =
-        ctx.params.fromManage === 'manage'
-            ? Blog.findById(ctx.params.id)
-            : Blog.findByIdAndUpdate(ctx.params.id, { $inc: { read: 1 } })
-    await query
+router.get('/:id', async ctx => {
+    await Blog.findByIdAndUpdate(ctx.params.id, { $inc: { read: 1 } })
         .exec()
         .then(doc => {
             ctx.status = 200
@@ -43,8 +34,20 @@ router.get('/blog/:id/:fromManage', async (ctx, next) => {
         })
 })
 
-router.post('/blog', async (ctx, next) => {
-    await next()
+router.get('/:id/manage', async ctx => {
+    await Blog.findById(ctx.params.id)
+        .exec()
+        .then(doc => {
+            ctx.status = 200
+            ctx.body = { doc }
+        })
+        .catch(err => {
+            ctx.status = 400
+            ctx.body = { msg: err.errmsg }
+        })
+})
+
+router.post('/', async ctx => {
     let blog = new Blog(ctx.request.body)
     await blog
         .save()
@@ -57,8 +60,7 @@ router.post('/blog', async (ctx, next) => {
         })
 })
 
-router.put('/blog/:id', async (ctx, next) => {
-    await next()
+router.put('/:id', async ctx => {
     await Blog.findByIdAndUpdate(ctx.params.id, {
         update: Date.now(),
         ...ctx.request.body
@@ -73,8 +75,7 @@ router.put('/blog/:id', async (ctx, next) => {
         })
 })
 
-router.del('/blog/:id', async (ctx, next) => {
-    await next()
+router.del('/:id', async ctx => {
     await Blog.findByIdAndDelete(ctx.params.id)
         .exec()
         .then(() => {
