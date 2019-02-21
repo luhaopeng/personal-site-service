@@ -20,8 +20,8 @@ router.put('/bloglist/:page', async (ctx, next) => {
         .sort({ time: -1 })
         .exec()
         .then(doc => {
-            ctx.response.status = 200
-            ctx.response.body = { doc }
+            ctx.status = 200
+            ctx.body = { doc }
         })
 })
 
@@ -34,12 +34,12 @@ router.get('/blog/:id/:fromManage', async (ctx, next) => {
     await query
         .exec()
         .then(doc => {
-            ctx.response.status = 200
-            ctx.response.body = { doc }
+            ctx.status = 200
+            ctx.body = { doc }
         })
         .catch(err => {
-            ctx.response.status = 400
-            ctx.response.body = { msg: err.errmsg }
+            ctx.status = 400
+            ctx.body = { msg: err.errmsg }
         })
 })
 
@@ -49,11 +49,11 @@ router.post('/blog', async (ctx, next) => {
     await blog
         .save()
         .then(() => {
-            ctx.response.status = 200
+            ctx.status = 200
         })
         .catch(err => {
-            ctx.response.status = 400
-            ctx.response.body = { msg: err.errmsg }
+            ctx.status = 400
+            ctx.body = { msg: err.errmsg }
         })
 })
 
@@ -65,11 +65,11 @@ router.put('/blog/:id', async (ctx, next) => {
     })
         .exec()
         .then(() => {
-            ctx.response.status = 200
+            ctx.status = 200
         })
         .catch(err => {
-            ctx.response.status = 400
-            ctx.response.body = { msg: err.errmsg }
+            ctx.status = 400
+            ctx.body = { msg: err.errmsg }
         })
 })
 
@@ -78,11 +78,11 @@ router.del('/blog/:id', async (ctx, next) => {
     await Blog.findByIdAndDelete(ctx.params.id)
         .exec()
         .then(() => {
-            ctx.response.status = 200
+            ctx.status = 200
         })
         .catch(err => {
-            ctx.response.status = 400
-            ctx.response.body = { msg: err.errmsg }
+            ctx.status = 400
+            ctx.body = { msg: err.errmsg }
         })
 })
 
