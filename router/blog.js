@@ -47,6 +47,12 @@ router.get('/:id', async ctx => {
 })
 
 router.post('/', async ctx => {
+    let { auth } = ctx.query
+    let expire = decrypt(auth)
+    if (dayjs().isAfter(dayjs(expire))) {
+        ctx.status = 401
+        return
+    }
     let blog = new Blog(ctx.request.body)
     await blog
         .save()
@@ -60,6 +66,12 @@ router.post('/', async ctx => {
 })
 
 router.put('/:id', async ctx => {
+    let { auth } = ctx.query
+    let expire = decrypt(auth)
+    if (dayjs().isAfter(dayjs(expire))) {
+        ctx.status = 401
+        return
+    }
     await Blog.findByIdAndUpdate(ctx.params.id, {
         update: Date.now(),
         ...ctx.request.body
@@ -75,6 +87,12 @@ router.put('/:id', async ctx => {
 })
 
 router.del('/:id', async ctx => {
+    let { auth } = ctx.query
+    let expire = decrypt(auth)
+    if (dayjs().isAfter(dayjs(expire))) {
+        ctx.status = 401
+        return
+    }
     await Blog.findByIdAndDelete(ctx.params.id)
         .exec()
         .then(() => {
