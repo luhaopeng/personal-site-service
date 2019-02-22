@@ -2,16 +2,23 @@ const router = require('koa-router')({
     prefix: '/blog'
 })
 const Blog = require('../db/blog')
+const { decrypt } = require('../utils/crypto')
+const dayjs = require('dayjs')
 
-const limit = 5
-
-router.put('/list/:page', async ctx => {
-    let { title } = ctx.request.body
+router.get('/list', async ctx => {
+    let { page, per_page, title, auth } = ctx.query
+    let expire = decrypt(auth)
+    if (dayjs().isAfter(dayjs(expire))) {
+        ctx.status = 401
+        return
+    }
+    let limit = parseInt(per_page)
+    let skip = parseInt(page) * limit
     await Blog.find(
         { title: new RegExp(title) },
         { title: 1, time: 1, draft: 1 }
     )
-        .skip(ctx.params.page * limit)
+        .skip(skip)
         .limit(limit)
         .sort({ time: -1 })
         .exec()
@@ -22,20 +29,12 @@ router.put('/list/:page', async ctx => {
 })
 
 router.get('/:id', async ctx => {
-    await Blog.findByIdAndUpdate(ctx.params.id, { $inc: { read: 1 } })
-        .exec()
-        .then(doc => {
-            ctx.status = 200
-            ctx.body = { doc }
-        })
-        .catch(err => {
-            ctx.status = 400
-            ctx.body = { msg: err.errmsg }
-        })
-})
-
-router.get('/:id/manage', async ctx => {
-    await Blog.findById(ctx.params.id)
+    let { from } = ctx.query
+    let query =
+        from === 'manage'
+            ? Blog.findById(ctx.params.id)
+            : Blog.findByIdAndUpdate(ctx.params.id, { $inc: { read: 1 } })
+    await query
         .exec()
         .then(doc => {
             ctx.status = 200
