@@ -11,9 +11,11 @@ router.get('/', ctx => {
         ctx.status = 401
         return
     }
-    let expire = dayjs().add(2, 'hour').toISOString()
+    let expire = dayjs()
+        .add(2, 'hour')
+        .toISOString()
     ctx.status = 200
-    ctx.body = { expire, auth: encrypt(expire) }
+    ctx.body = { auth: encrypt(expire) }
 })
 
 module.exports = router
