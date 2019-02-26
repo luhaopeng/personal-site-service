@@ -47,7 +47,7 @@ router.get('/:id', async ctx => {
         })
         .catch(err => {
             ctx.status = 400
-            ctx.body = { msg: err.errmsg }
+            ctx.body = { msg: err.message }
         })
 })
 
@@ -71,7 +71,7 @@ router.post('/', async ctx => {
         })
         .catch(err => {
             ctx.status = 400
-            ctx.body = { msg: err.errmsg }
+            ctx.body = { msg: err.message }
         })
 })
 
@@ -97,7 +97,7 @@ router.put('/:id', async ctx => {
         })
         .catch(err => {
             ctx.status = 400
-            ctx.body = { msg: err.errmsg }
+            ctx.body = { msg: err.message }
         })
 })
 
@@ -120,7 +120,7 @@ router.del('/:id', async ctx => {
         })
         .catch(err => {
             ctx.status = 400
-            ctx.body = { msg: err.errmsg }
+            ctx.body = { msg: err.message }
         })
 })
 
