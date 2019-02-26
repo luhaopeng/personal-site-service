@@ -7,12 +7,13 @@ const dayjs = require('dayjs')
 
 router.get('/list', async ctx => {
     let { page, per_page, title, auth } = ctx.query
-    if (!auth) {
-        ctx.status = 401
-        return
-    }
-    let expire = decrypt(auth)
-    if (dayjs().isAfter(dayjs(expire))) {
+    try {
+        let expire = decrypt(auth)
+        if (dayjs().isAfter(dayjs(expire))) {
+            ctx.status = 401
+            return
+        }
+    } catch (error) {
         ctx.status = 401
         return
     }
@@ -52,12 +53,13 @@ router.get('/:id', async ctx => {
 
 router.post('/', async ctx => {
     let { auth } = ctx.query
-    if (!auth) {
-        ctx.status = 401
-        return
-    }
-    let expire = decrypt(auth)
-    if (dayjs().isAfter(dayjs(expire))) {
+    try {
+        let expire = decrypt(auth)
+        if (dayjs().isAfter(dayjs(expire))) {
+            ctx.status = 401
+            return
+        }
+    } catch (error) {
         ctx.status = 401
         return
     }
@@ -75,12 +77,13 @@ router.post('/', async ctx => {
 
 router.put('/:id', async ctx => {
     let { auth } = ctx.query
-    if (!auth) {
-        ctx.status = 401
-        return
-    }
-    let expire = decrypt(auth)
-    if (dayjs().isAfter(dayjs(expire))) {
+    try {
+        let expire = decrypt(auth)
+        if (dayjs().isAfter(dayjs(expire))) {
+            ctx.status = 401
+            return
+        }
+    } catch (error) {
         ctx.status = 401
         return
     }
@@ -100,12 +103,13 @@ router.put('/:id', async ctx => {
 
 router.del('/:id', async ctx => {
     let { auth } = ctx.query
-    if (!auth) {
-        ctx.status = 401
-        return
-    }
-    let expire = decrypt(auth)
-    if (dayjs().isAfter(dayjs(expire))) {
+    try {
+        let expire = decrypt(auth)
+        if (dayjs().isAfter(dayjs(expire))) {
+            ctx.status = 401
+            return
+        }
+    } catch (error) {
         ctx.status = 401
         return
     }
