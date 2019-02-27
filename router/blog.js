@@ -66,8 +66,9 @@ router.post('/', async ctx => {
     let blog = new Blog(ctx.request.body)
     await blog
         .save()
-        .then(() => {
+        .then(doc => {
             ctx.status = 200
+            ctx.body = { id: doc._id }
         })
         .catch(err => {
             ctx.status = 400
