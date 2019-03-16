@@ -1,128 +1,16 @@
 const router = require('koa-router')({
     prefix: '/blog'
 })
-const Blog = require('../db/blog')
-const { decrypt } = require('../utils/crypto')
-const dayjs = require('dayjs')
+const blogController = require('../controllers/blog')
 
-router.get('/list', async ctx => {
-    let { page, per_page, title, auth } = ctx.query
-    try {
-        let expire = decrypt(auth)
-        if (dayjs().isAfter(dayjs(expire))) {
-            ctx.status = 401
-            return
-        }
-    } catch (error) {
-        ctx.status = 401
-        return
-    }
-    let limit = parseInt(per_page)
-    let skip = parseInt(page) * limit
-    await Blog.find(
-        { title: new RegExp(title) },
-        { title: 1, time: 1, draft: 1 }
-    )
-        .skip(skip)
-        .limit(limit)
-        .sort({ time: -1 })
-        .exec()
-        .then(doc => {
-            ctx.status = 200
-            ctx.body = { doc }
-        })
-})
+router.get('/list', blogController.getList)
 
-router.get('/:id', async ctx => {
-    let { from } = ctx.query
-    let query =
-        from === 'manage'
-            ? Blog.findById(ctx.params.id)
-            : Blog.findByIdAndUpdate(ctx.params.id, { $inc: { read: 1 } })
-    await query
-        .exec()
-        .then(doc => {
-            ctx.status = 200
-            ctx.body = { doc }
-        })
-        .catch(err => {
-            ctx.status = 400
-            ctx.body = { msg: err.message }
-        })
-})
+router.get('/:id', blogController.getBlogById)
 
-router.post('/', async ctx => {
-    let { auth } = ctx.query
-    try {
-        let expire = decrypt(auth)
-        if (dayjs().isAfter(dayjs(expire))) {
-            ctx.status = 401
-            return
-        }
-    } catch (error) {
-        ctx.status = 401
-        return
-    }
-    let blog = new Blog(ctx.request.body)
-    await blog
-        .save()
-        .then(doc => {
-            ctx.status = 200
-            ctx.body = { id: doc._id }
-        })
-        .catch(err => {
-            ctx.status = 400
-            ctx.body = { msg: err.message }
-        })
-})
+router.post('/', blogController.createBlog)
 
-router.put('/:id', async ctx => {
-    let { auth } = ctx.query
-    try {
-        let expire = decrypt(auth)
-        if (dayjs().isAfter(dayjs(expire))) {
-            ctx.status = 401
-            return
-        }
-    } catch (error) {
-        ctx.status = 401
-        return
-    }
-    await Blog.findByIdAndUpdate(ctx.params.id, {
-        update: Date.now(),
-        ...ctx.request.body
-    })
-        .exec()
-        .then(() => {
-            ctx.status = 200
-        })
-        .catch(err => {
-            ctx.status = 400
-            ctx.body = { msg: err.message }
-        })
-})
+router.put('/:id', blogController.updateBlogById)
 
-router.del('/:id', async ctx => {
-    let { auth } = ctx.query
-    try {
-        let expire = decrypt(auth)
-        if (dayjs().isAfter(dayjs(expire))) {
-            ctx.status = 401
-            return
-        }
-    } catch (error) {
-        ctx.status = 401
-        return
-    }
-    await Blog.findByIdAndDelete(ctx.params.id)
-        .exec()
-        .then(() => {
-            ctx.status = 200
-        })
-        .catch(err => {
-            ctx.status = 400
-            ctx.body = { msg: err.message }
-        })
-})
+router.del('/:id', blogController.deleteBlogById)
 
 module.exports = router

@@ -1,21 +1,8 @@
 const router = require('koa-router')({
     prefix: '/auth'
 })
-const { verify } = require('../utils/auth')
-const { encrypt } = require('../utils/crypto')
-const dayjs = require('dayjs')
+const authController = require('../controllers/auth')
 
-router.get('/', ctx => {
-    let { token } = ctx.query
-    if (!verify(token)) {
-        ctx.status = 401
-        return
-    }
-    let expire = dayjs()
-        .add(2, 'hour')
-        .toISOString()
-    ctx.status = 200
-    ctx.body = { auth: encrypt(expire) }
-})
+router.get('/', authController.auth)
 
 module.exports = router
