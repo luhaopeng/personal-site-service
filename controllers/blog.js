@@ -55,7 +55,7 @@ const getListAll = async ctx => {
     }
     let limit = parseInt(per_page)
     let skip = parseInt(page) * limit
-    await Blog.find(
+    let docs = await Blog.find(
         { title: new RegExp(title) },
         { title: 1, time: 1, draft: 1 }
     )
@@ -63,9 +63,7 @@ const getListAll = async ctx => {
         .limit(limit)
         .sort({ time: -1 })
         .exec()
-        .then(docs => {
-            ctx.res.ok({ data: { docs } })
-        })
+    ctx.res.ok({ data: { docs } })
 }
 
 const getBlogById = async ctx => {
@@ -75,14 +73,12 @@ const getBlogById = async ctx => {
         $inc: { read: 1 }
     })
     let query = from === 'manage' ? find : findAndUpdate
-    await query
-        .exec()
-        .then(doc => {
-            ctx.res.ok({ data: { doc } })
-        })
-        .catch(error => {
-            ctx.res.badRequest({ message: error.message })
-        })
+    try {
+        let doc = await query.exec()
+        ctx.res.ok({ data: { doc } })
+    } catch (error) {
+        ctx.res.badRequest({ message: error.message })
+    }
 }
 
 const createBlog = async ctx => {
@@ -97,14 +93,12 @@ const createBlog = async ctx => {
         return
     }
     let blog = new Blog(ctx.request.body)
-    await blog
-        .save()
-        .then(doc => {
-            ctx.res.ok({ data: { id: doc._id } })
-        })
-        .catch(error => {
-            ctx.res.badRequest({ message: error.message })
-        })
+    try {
+        let doc = await blog.save()
+        ctx.res.ok({ data: { id: doc._id } })
+    } catch (error) {
+        ctx.res.badRequest({ message: error.message })
+    }
 }
 
 const updateBlogById = async ctx => {
@@ -118,17 +112,15 @@ const updateBlogById = async ctx => {
         ctx.res.unauthorized()
         return
     }
-    await Blog.findByIdAndUpdate(ctx.params.id, {
-        update: Date.now(),
-        ...ctx.request.body
-    })
-        .exec()
-        .then(() => {
-            ctx.res.ok()
-        })
-        .catch(error => {
-            ctx.res.badRequest({ message: error.message })
-        })
+    try {
+        await Blog.findByIdAndUpdate(ctx.params.id, {
+            update: Date.now(),
+            ...ctx.request.body
+        }).exec()
+        ctx.res.ok()
+    } catch (error) {
+        ctx.res.badRequest({ message: error.message })
+    }
 }
 
 const deleteBlogById = async ctx => {
@@ -142,14 +134,12 @@ const deleteBlogById = async ctx => {
         ctx.res.unauthorized()
         return
     }
-    await Blog.findByIdAndDelete(ctx.params.id)
-        .exec()
-        .then(() => {
-            ctx.res.ok()
-        })
-        .catch(error => {
-            ctx.res.badRequest({ message: error.message })
-        })
+    try {
+        await Blog.findByIdAndDelete(ctx.params.id).exec()
+        ctx.res.ok()
+    } catch (error) {
+        ctx.res.badRequest({ message: error.message })
+    }
 }
 
 module.exports = {
