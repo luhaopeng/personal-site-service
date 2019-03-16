@@ -3,13 +3,22 @@ const { decrypt } = require('../utils/crypto')
 const dayjs = require('dayjs')
 
 const getArchive = async ctx => {
-    let doc = await Blog.aggregate([
+    let result = await Blog.aggregate([
         { $match: { draft: false } },
         { $project: { year: { $year: '$time' }, _id: 0 } },
         { $group: { years: { $addToSet: '$year' }, _id: null } }
     ]).exec()
-    let years = doc[0].years.sort((a, b) => b - a)
-    ctx.res.ok({ data: { years } })
+    let years = result[0].years.sort((a, b) => b - a)
+    let docs = await Blog.find(
+        {
+            draft: false,
+            time: { $gte: new Date(years[0], 0, 1) }
+        },
+        { title: 1, time: 1 }
+    )
+        .sort({ time: -1 })
+        .exec()
+    ctx.res.ok({ data: { years, docs } })
 }
 
 const getList = async ctx => {
@@ -18,7 +27,7 @@ const getList = async ctx => {
         ctx.res.badRequest({ message: 'year格式有误' })
         return
     }
-    let doc = await Blog.find(
+    let docs = await Blog.find(
         {
             draft: false,
             time: {
@@ -30,7 +39,7 @@ const getList = async ctx => {
     )
         .sort({ time: -1 })
         .exec()
-    ctx.res.ok({ data: { doc } })
+    ctx.res.ok({ data: { docs } })
 }
 
 const getListAll = async ctx => {
@@ -54,8 +63,8 @@ const getListAll = async ctx => {
         .limit(limit)
         .sort({ time: -1 })
         .exec()
-        .then(doc => {
-            ctx.res.ok({ data: { doc } })
+        .then(docs => {
+            ctx.res.ok({ data: { docs } })
         })
 }
 
@@ -71,8 +80,8 @@ const getBlogById = async ctx => {
         .then(doc => {
             ctx.res.ok({ data: { doc } })
         })
-        .catch(err => {
-            ctx.res.badRequest({ message: err.message })
+        .catch(error => {
+            ctx.res.badRequest({ message: error.message })
         })
 }
 
@@ -93,8 +102,8 @@ const createBlog = async ctx => {
         .then(doc => {
             ctx.res.ok({ data: { id: doc._id } })
         })
-        .catch(err => {
-            ctx.res.badRequest({ message: err.message })
+        .catch(error => {
+            ctx.res.badRequest({ message: error.message })
         })
 }
 
@@ -117,8 +126,8 @@ const updateBlogById = async ctx => {
         .then(() => {
             ctx.res.ok()
         })
-        .catch(err => {
-            ctx.res.badRequest({ message: err.message })
+        .catch(error => {
+            ctx.res.badRequest({ message: error.message })
         })
 }
 
@@ -138,8 +147,8 @@ const deleteBlogById = async ctx => {
         .then(() => {
             ctx.res.ok()
         })
-        .catch(err => {
-            ctx.res.badRequest({ message: err.message })
+        .catch(error => {
+            ctx.res.badRequest({ message: error.message })
         })
 }
 
