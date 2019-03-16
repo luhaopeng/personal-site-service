@@ -2,7 +2,38 @@ const Blog = require('../db/blog')
 const { decrypt } = require('../utils/crypto')
 const dayjs = require('dayjs')
 
+const getArchive = async ctx => {
+    let doc = await Blog.aggregate([
+        { $match: { draft: false } },
+        { $project: { year: { $year: '$time' }, _id: 0 } },
+        { $group: { years: { $addToSet: '$year' }, _id: null } }
+    ]).exec()
+    let years = doc[0].years.sort((a, b) => b - a)
+    ctx.res.ok({ data: { years } })
+}
+
 const getList = async ctx => {
+    let year = parseInt(ctx.params.year)
+    if (isNaN(year)) {
+        ctx.res.badRequest({ message: 'year格式有误' })
+        return
+    }
+    let doc = await Blog.find(
+        {
+            draft: false,
+            time: {
+                $gte: new Date(year, 0, 1),
+                $lt: new Date(year + 1, 0, 1)
+            }
+        },
+        { title: 1, time: 1 }
+    )
+        .sort({ time: -1 })
+        .exec()
+    ctx.res.ok({ data: { doc } })
+}
+
+const getListAll = async ctx => {
     let { page, per_page, title, auth } = ctx.query
     try {
         let expire = decrypt(auth)
@@ -113,7 +144,9 @@ const deleteBlogById = async ctx => {
 }
 
 module.exports = {
+    getArchive,
     getList,
+    getListAll,
     getBlogById,
     createBlog,
     updateBlogById,

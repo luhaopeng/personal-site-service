@@ -3,7 +3,11 @@ const router = require('koa-router')({
 })
 const blogController = require('../controllers/blog')
 
-router.get('/list', blogController.getList)
+router.get('/archive', blogController.getArchive)
+
+router.get('/list/year/:year', blogController.getList)
+
+router.get('/list/all', blogController.getListAll)
 
 router.get('/:id', blogController.getBlogById)
 
