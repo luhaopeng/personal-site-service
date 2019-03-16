@@ -16,7 +16,7 @@ const getArchive = async ctx => {
         },
         { title: 1, time: 1 }
     )
-        .sort({ time: -1 })
+        .sort({ time: 1 })
         .exec()
     ctx.res.ok({ data: { years, docs } })
 }
@@ -37,7 +37,7 @@ const getList = async ctx => {
         },
         { title: 1, time: 1 }
     )
-        .sort({ time: -1 })
+        .sort({ time: 1 })
         .exec()
     ctx.res.ok({ data: { docs } })
 }
