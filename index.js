@@ -9,7 +9,13 @@ const app = new Koa()
 
 app.use(
     cors({
-        origin: 'http://localhost:8000'
+        origin: (ctx) => {
+            const validDomains = ['http://localhost:8000']
+            if (validDomains.indexOf(ctx.request.header.origin) !== -1) {
+                return ctx.request.header.origin
+            }
+            return validDomains[0]
+        }
     })
 )
 app.use(BodyParser())
