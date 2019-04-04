@@ -8,16 +8,20 @@ const getArchive = async ctx => {
         { $project: { year: { $year: '$time' }, _id: 0 } },
         { $group: { years: { $addToSet: '$year' }, _id: null } }
     ]).exec()
-    let years = result[0].years.sort((a, b) => b - a)
-    let docs = await Blog.find(
-        {
-            draft: false,
-            time: { $gte: new Date(years[0], 0, 1) }
-        },
-        { title: 1, time: 1 }
-    )
-        .sort({ time: 1 })
-        .exec()
+    let years = [],
+        docs = []
+    if (result) {
+        years = result[0].years.sort((a, b) => b - a)
+        docs = await Blog.find(
+            {
+                draft: false,
+                time: { $gte: new Date(years[0], 0, 1) }
+            },
+            { title: 1, time: 1 }
+        )
+            .sort({ time: 1 })
+            .exec()
+    }
     ctx.res.ok({ data: { years, docs } })
 }
 
