@@ -10,15 +10,15 @@
     "license": "ISC",
     "dependencies": {
         "@koa/cors": "^2.2.3",
-        "dayjs": "^1.8.6",
+        "dayjs": "^1.8.12",
         "koa": "^2.7.0",
         "koa-bodyparser": "^4.2.1",
         "koa-router": "^7.4.0",
-        "mongodb": "^3.1.13",
-        "mongoose": "^5.4.13",
-        "otplib": "^10.0.1"
+        "mongodb": "^3.2.2",
+        "mongoose": "^5.4.22",
+        "otplib": "^10.2.2"
     },
     "devDependencies": {
-        "eslint": "^5.14.1"
+        "eslint": "^5.16.0"
     }
 }
