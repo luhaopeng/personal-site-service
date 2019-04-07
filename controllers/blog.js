@@ -79,7 +79,31 @@ const getBlogById = async ctx => {
     let query = from === 'manage' ? find : findAndUpdate
     try {
         let doc = await query.exec()
-        ctx.res.ok({ data: { doc } })
+        if (from === 'manage') {
+            ctx.res.ok({ data: { doc } })
+        } else {
+            let prevBlog = Blog.find(
+                {
+                    draft: false,
+                    time: { $lt: doc.time }
+                },
+                { title: 1 }
+            )
+                .sort({ time: -1 })
+                .limit(1)
+            let nextBlog = Blog.find(
+                {
+                    draft: false,
+                    time: { $gt: doc.time }
+                },
+                { title: 1 }
+            )
+                .sort({ time: 1 })
+                .limit(1)
+            let prev = await prevBlog.exec()
+            let next = await nextBlog.exec()
+            ctx.res.ok({ data: { doc, prev, next } })
+        }
     } catch (error) {
         ctx.res.badRequest({ message: error.message })
     }
