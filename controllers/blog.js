@@ -10,7 +10,7 @@ const getArchive = async ctx => {
     ]).exec()
     let years = [],
         docs = []
-    if (result) {
+    if (result.length > 0) {
         years = result[0].years.sort((a, b) => b - a)
         docs = await Blog.find(
             {
